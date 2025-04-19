@@ -28,11 +28,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+//        String path = request.getRequestURI();
+//        if (path.equals("/auth/complete-signup")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
         String path = request.getRequestURI();
-        if (path.equals("/auth/complete-signup")) {
+
+        // Skip filtering for public paths
+        if (path.startsWith("/auth/complete-signup") ||
+                path.startsWith("/auth/login") ||
+                path.startsWith("/auth/register") ||
+                path.startsWith("/oauth2")) {
+
             filterChain.doFilter(request, response);
             return;
         }
+
 
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
