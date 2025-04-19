@@ -1,23 +1,28 @@
 package com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt;
 
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.User;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserService userService;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     @Override
@@ -26,47 +31,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
-
-//        String path = request.getRequestURI();
-//        if (path.equals("/auth/complete-signup")) {
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
         String path = request.getRequestURI();
-
-        // Skip filtering for public paths
         if (path.startsWith("/auth/complete-signup") ||
                 path.startsWith("/auth/login") ||
                 path.startsWith("/auth/register") ||
                 path.startsWith("/oauth2")) {
-
+            // Skip public endpoints
             filterChain.doFilter(request, response);
             return;
         }
 
-
-
+        String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or Invalid Token");
             return;
         }
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            String email = jwtUtil.validateTokenAndRetrieveSubject(token);
+        String token = authHeader.substring(7);
+        String email = jwtUtil.validateTokenAndRetrieveSubject(token);
+        if (email == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+            return;
+        }
 
-            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                email,
-                                null,
-                                Collections.emptyList());
-
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Lookup user to get role
+            User user = userService.findByEmail(email)
+                    .orElse(null);
+            if (user == null) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not found");
+                return;
             }
+
+            // Build authorities list, e.g. ROLE_HERBALIST or ROLE_USER
+            List<SimpleGrantedAuthority> authorities = List.of(
+                    new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+            );
+
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(email, null, authorities);
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

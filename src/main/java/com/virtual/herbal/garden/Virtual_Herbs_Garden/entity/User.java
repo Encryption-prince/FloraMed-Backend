@@ -31,6 +31,6 @@ public class User {
     private Role role;
 
     // Only set for HERBALISTs (e.g., stored on disk or S3 path)
-    @Lob
-    private byte[] identificationDocument;
+    @Column(length = 1000)
+    private String identificationDocument;
 }

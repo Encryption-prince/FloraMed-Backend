@@ -25,7 +25,7 @@ public class AuthController {
     @PostMapping("/complete-signup")
     public ResponseEntity<?> completeSignup(@RequestParam("token") String tempToken,
                                             @RequestParam("role") Role role,
-                                            @RequestPart(value = "document", required = false) MultipartFile document) throws IOException {
+                                            @RequestPart(value = "document", required = false) String document) throws IOException {
 
         System.out.println("✅ Hit completeSignup endpoint");
         if (!jwtUtil.validateToken(tempToken)) {
@@ -47,7 +47,7 @@ public class AuthController {
         user.setRole(role);
 
         if (role == Role.HERBALIST && document != null) {
-            user.setIdentificationDocument(document.getBytes());
+            user.setIdentificationDocument(document);
         }
 
         userRepository.save(user);
