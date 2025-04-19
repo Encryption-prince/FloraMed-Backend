@@ -35,7 +35,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (path.startsWith("/auth/complete-signup") ||
                 path.startsWith("/auth/login") ||
                 path.startsWith("/auth/register") ||
-                path.startsWith("/oauth2")) {
+                path.startsWith("/oauth2") ||
+                path.startsWith("/plants/all") ||
+                path.startsWith("/plants/filter")) {
             // Skip public endpoints
             filterChain.doFilter(request, response);
             return;

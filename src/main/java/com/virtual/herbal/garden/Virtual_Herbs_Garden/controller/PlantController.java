@@ -91,4 +91,21 @@ public class PlantController {
 
         return ResponseEntity.ok(myPlants);
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Plant>> filterPlants(
+            @RequestParam(required = false) String region,
+            @RequestParam(required = false) String plantType,
+            @RequestParam(required = false) String uses,
+            @RequestParam(required = false) String scientificName,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String createdBy) {
+
+        List<Plant> filteredPlants = plantRepository.filterPlants(
+                region, plantType, uses, scientificName, name, createdBy);
+
+        return ResponseEntity.ok(filteredPlants);
+    }
+
+
 }

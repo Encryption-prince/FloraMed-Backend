@@ -38,8 +38,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/oauth2/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/plants/all").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/plants/filter").permitAll()
                         .requestMatchers(HttpMethod.POST, "/plants/add")
                         .hasAuthority("ROLE_HERBALIST")
+                        .requestMatchers(HttpMethod.POST, "/bookmarks/**")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
+                        .requestMatchers(HttpMethod.DELETE, "/bookmarks/**")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
+                        .requestMatchers(HttpMethod.GET, "/bookmarks/my")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
