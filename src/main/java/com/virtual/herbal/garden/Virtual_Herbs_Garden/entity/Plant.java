@@ -31,5 +31,7 @@ public class Plant {
 
     private String voiceDescriptionUrl;
     private String buyingLink;
+    private String imageUrl;
+    private String plantType;
     private String createdBy;
 }

@@ -36,6 +36,8 @@ public class PlantService {
                 plantDto.getDescription(),
                 plantDto.getVoiceDescriptionUrl(),
                 plantDto.getBuyingLink(),
+                plantDto.getImageUrl(),
+                plantDto.getPlantType(),
                 email
         );
 

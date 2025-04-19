@@ -18,4 +18,6 @@ public class PlantDto {
     private String description;
     private String voiceDescriptionUrl; // NEW
     private String buyingLink;
+    private String imageUrl;
+    private String plantType;
 }

@@ -27,8 +27,10 @@ public class PlantController {
             @RequestPart("3dModelUrl") String modelUrl,
             @RequestPart(value = "voiceDescription", required = false) String voiceDescription,
             @RequestPart(value = "buyLink", required = false) String buyLink,
-            @RequestPart("scientificName") String sceintificName,
+            @RequestPart("scientificName") String scientificName,
             @RequestPart("uses") String uses,
+            @RequestPart("imageUrl") String imageUrl,
+            @RequestPart("plantType") String plantType,
             HttpServletRequest request) throws IOException {
 
         String authHeader = request.getHeader("Authorization");
@@ -51,8 +53,10 @@ public class PlantController {
                 .createdBy(createdBy)
                 .voiceDescriptionUrl(voiceDescription)
                 .buyingLink(buyLink)
-                .scientificName(sceintificName)
+                .scientificName(scientificName)
                 .uses(uses)
+                .imageUrl(imageUrl)
+                .plantType(plantType)
                 .build();
 
         plantRepository.save(plant);
