@@ -3,6 +3,7 @@ package com.virtual.herbal.garden.Virtual_Herbs_Garden.controller;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Plant;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/plants")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+@Tag(name = "Plant API")
 public class PlantController {
     private final PlantRepository plantRepository;
     private final JwtUtil jwtUtil;

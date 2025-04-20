@@ -5,6 +5,7 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Plant;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.BookmarkedPlantRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/bookmarks")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+@Tag(name = "Bookmark Plant API")
 public class BookmarkController {
 
     private final BookmarkedPlantRepository bookmarkRepo;

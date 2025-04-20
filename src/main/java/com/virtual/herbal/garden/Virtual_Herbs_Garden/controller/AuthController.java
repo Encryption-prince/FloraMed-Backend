@@ -4,6 +4,7 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Role;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.User;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.UserRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
+@Tag(name = "Auth API")
 public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
