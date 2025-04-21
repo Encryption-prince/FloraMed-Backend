@@ -48,6 +48,11 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
                         .requestMatchers(HttpMethod.GET, "/bookmarks/my")
                         .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
+                        .requestMatchers(HttpMethod.GET, "/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/blogs/add")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
+                        .requestMatchers(HttpMethod.PUT, "/blogs/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/blogs/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
