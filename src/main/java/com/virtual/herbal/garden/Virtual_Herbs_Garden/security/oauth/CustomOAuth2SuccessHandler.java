@@ -12,6 +12,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Component
@@ -46,21 +48,22 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 String jwt = jwtUtil.generateToken(email);
 
                 response.setContentType("application/json");
-                response.getWriter().write("{\"message\": \"Existing user logged in\", \"token\": \"" + jwt + "\"}");
+                response.getWriter().write("{\"status\": \"existing\", \"token\": \"" + jwt + "\", \"role\": \"" + existingUser.get().getRole() + "\"}");
 
-                // For production:
-                // String redirectUrl = "http://your-frontend/home?token=" + URLEncoder.encode(jwt, StandardCharsets.UTF_8);
-                // response.sendRedirect(redirectUrl);
+                // Redirect to home page with JWT for the existing user
+                String redirectUrl = "http://localhost:5173/oauth/callback?token=" + URLEncoder.encode(jwt, StandardCharsets.UTF_8);
+                response.sendRedirect(redirectUrl);
+
             } else {
                 // ✅ New user – generate temp token with extra claims (email, name, picture)
                 String tempToken = jwtUtil.generateTokenWithClaims(email, name, picture);
 
                 response.setContentType("application/json");
-                response.getWriter().write("{\"message\": \"New user, complete signup\", \"tempToken\": \"" + tempToken + "\"}");
+                response.getWriter().write("{\"status\": \"new\", \"tempToken\": \"" + tempToken + "\", \"name\": \"" + name + "\", \"picture\": \"" + picture + "\"}");
 
-                // For production:
-                // String redirectUrl = "http://your-frontend/complete-signup?token=" + URLEncoder.encode(tempToken, StandardCharsets.UTF_8);
-                // response.sendRedirect(redirectUrl);
+                // Redirect to signup page with tempToken for new user
+                String redirectUrl = "http://localhost:5173/oauth/callback?tempToken=" + URLEncoder.encode(tempToken, StandardCharsets.UTF_8);
+                response.sendRedirect(redirectUrl);
             }
 
         } catch (Exception e) {
