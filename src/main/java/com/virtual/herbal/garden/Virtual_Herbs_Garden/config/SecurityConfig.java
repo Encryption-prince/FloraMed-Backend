@@ -53,6 +53,8 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
                         .requestMatchers(HttpMethod.PUT, "/blogs/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/blogs/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/user/profile")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
