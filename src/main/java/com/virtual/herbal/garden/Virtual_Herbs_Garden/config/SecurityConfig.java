@@ -63,6 +63,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/blogs/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/user/profile")
                         .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
+                        .requestMatchers(HttpMethod.GET,  "/comments/by-blog/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/comments/add")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")                               // ← must be logged in
+                        .requestMatchers(HttpMethod.DELETE, "/comments/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
@@ -113,7 +117,7 @@ public class SecurityConfig {
 //                "http://localhost:3000"
 //        ));
         // Specify allowed origins explicitly
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "https://virtual-herbal-garden-frontend.vercel.app"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
