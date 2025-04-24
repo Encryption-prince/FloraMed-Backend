@@ -1,5 +1,6 @@
 package com.virtual.herbal.garden.Virtual_Herbs_Garden.controller;
 
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.dto.PlantDto;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Plant;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
@@ -24,17 +25,8 @@ public class PlantController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addPlant(
-            @RequestPart("name") String name,
-            @RequestPart("description") String description,
-            @RequestPart("region") String region,
-            @RequestPart("3dModelUrl") String modelUrl,
-            @RequestPart(value = "voiceDescription", required = false) String voiceDescription,
-            @RequestPart(value = "buyLink", required = false) String buyLink,
-            @RequestPart("scientificName") String scientificName,
-            @RequestPart("uses") String uses,
-            @RequestPart("imageUrl") String imageUrl,
-            @RequestPart("plantType") String plantType,
-            HttpServletRequest request) throws IOException {
+            @RequestBody PlantDto plantDto,
+            HttpServletRequest request) {
 
         String authHeader = request.getHeader("Authorization");
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
@@ -49,17 +41,17 @@ public class PlantController {
         String createdBy = jwtUtil.getEmailFromToken(jwt);
 
         Plant plant = Plant.builder()
-                .plantName(name)
-                .description(description)
-                .region(region)
-                .image3DUrl(modelUrl)
+                .plantName(plantDto.getPlantName())
+                .description(plantDto.getDescription())
+                .region(plantDto.getRegion())
+                .image3DUrl(plantDto.getImage3DUrl())
                 .createdBy(createdBy)
-                .voiceDescriptionUrl(voiceDescription)
-                .buyingLink(buyLink)
-                .scientificName(scientificName)
-                .uses(uses)
-                .imageUrl(imageUrl)
-                .plantType(plantType)
+                .voiceDescriptionUrl(plantDto.getVoiceDescriptionUrl())
+                .buyingLink(plantDto.getBuyingLink())
+                .scientificName(plantDto.getScientificName())
+                .uses(plantDto.getUses())
+                .imageUrl(plantDto.getImageUrl())
+                .plantType(plantDto.getPlantType())
                 .build();
 
         plantRepository.save(plant);
