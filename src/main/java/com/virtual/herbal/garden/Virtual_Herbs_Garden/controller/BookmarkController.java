@@ -5,9 +5,12 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Plant;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.BookmarkedPlantRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.BookmarkService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,8 @@ import java.util.List;
 @Tag(name = "Bookmark Plant API")
 public class BookmarkController {
 
+    @Autowired
+    private BookmarkService bookmarkService;
     private final BookmarkedPlantRepository bookmarkRepo;
     private final PlantRepository plantRepo;
     private final JwtUtil jwtUtil;
@@ -46,14 +51,26 @@ public class BookmarkController {
         return ResponseEntity.ok("Bookmarked successfully");
     }
 
-    @DeleteMapping("/remove/{plantId}")
-    public ResponseEntity<?> removeBookmark(@PathVariable Long plantId, HttpServletRequest request) {
-        String email = extractEmail(request);
-        if (email == null) return ResponseEntity.status(401).body("Unauthorized");
+//    @DeleteMapping("/remove/{plantId}")
+//    public ResponseEntity<?> removeBookmark(@PathVariable Long plantId, HttpServletRequest request) {
+//        String email = extractEmail(request);
+//        if (email == null) return ResponseEntity.status(401).body("Unauthorized");
+//
+//        bookmarkRepo.deleteByUserEmailAndPlant_Id(email, plantId);
+//        return ResponseEntity.ok("Bookmark removed");
+//    }
 
-        bookmarkRepo.deleteByUserEmailAndPlant_Id(email, plantId);
-        return ResponseEntity.ok("Bookmark removed");
+    @DeleteMapping("/remove/{plantId}")
+    public ResponseEntity<String> removeBookmark(@PathVariable Long plantId, HttpServletRequest request) {
+        String email = extractEmail(request);
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+
+        bookmarkService.removeBookmark(email, plantId);
+        return ResponseEntity.ok("Bookmark removed successfully");
     }
+
 
     @GetMapping("/my")
     public ResponseEntity<?> getMyBookmarks(HttpServletRequest request) {
