@@ -41,7 +41,6 @@ public class BlogController {
         Blog blog = Blog.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
-                .imageUrl(request.getImageUrl())
                 .author(authorEmail)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -98,7 +97,6 @@ public class BlogController {
             }
             blog.setTitle(request.getTitle());
             blog.setContent(request.getContent());
-            blog.setImageUrl(request.getImageUrl());
             blog.setUpdatedAt(LocalDateTime.now());
             blogRepository.save(blog);
             return ResponseEntity.ok("Blog updated successfully");

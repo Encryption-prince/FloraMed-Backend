@@ -24,7 +24,6 @@ public class Blog {
 
     private String author; // This can be the user's email or name
 
-    private String imageUrl;
 
     private LocalDateTime createdAt;
 
