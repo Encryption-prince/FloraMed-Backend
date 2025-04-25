@@ -40,6 +40,12 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil, userService);
+    }
+
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(withDefaults())
@@ -81,10 +87,15 @@ public class SecurityConfig {
                 );
 
         // Inject both JwtUtil and UserService into the filter
+//        http.addFilterBefore(
+//                new JwtAuthenticationFilter(jwtUtil, userService),
+//                UsernamePasswordAuthenticationFilter.class
+//        );
         http.addFilterBefore(
                 new JwtAuthenticationFilter(jwtUtil, userService),
                 UsernamePasswordAuthenticationFilter.class
         );
+
 
         return http.build();
     }

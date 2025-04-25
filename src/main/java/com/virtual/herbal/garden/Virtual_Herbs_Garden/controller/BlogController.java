@@ -9,6 +9,8 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +27,7 @@ public class BlogController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/add")
-    public ResponseEntity<?> createBlog(@RequestBody CreateBlogRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> createBlog(@ModelAttribute CreateBlogRequest request, HttpServletRequest httpRequest) {
         String authHeader = httpRequest.getHeader("Authorization");
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("Missing or invalid token");
@@ -37,6 +39,7 @@ public class BlogController {
         }
 
         String authorEmail = jwtUtil.getEmailFromToken(token);
+
 
         Blog blog = Blog.builder()
                 .title(request.getTitle())
