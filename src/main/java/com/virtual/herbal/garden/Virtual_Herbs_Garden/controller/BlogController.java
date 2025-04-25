@@ -27,7 +27,7 @@ public class BlogController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/add")
-    public ResponseEntity<?> createBlog(@ModelAttribute CreateBlogRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> createBlog(@RequestBody CreateBlogRequest request, HttpServletRequest httpRequest) {
         String authHeader = httpRequest.getHeader("Authorization");
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("Missing or invalid token");
