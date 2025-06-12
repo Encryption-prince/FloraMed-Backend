@@ -1,6 +1,7 @@
 package com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt;
 
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.User;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.TokenBacklistService;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,10 +20,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final TokenBacklistService tokenBacklistService;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService, TokenBacklistService tokenBacklistService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.tokenBacklistService = tokenBacklistService;
     }
 
     @Override
@@ -55,6 +58,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
+        // 🔒 Check if token is blacklisted
+        if (tokenBacklistService.isTokenBlacklisted(token)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token has been logged out");
+            return;
+        }
         String email = jwtUtil.validateTokenAndRetrieveSubject(token);
         if (email == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");

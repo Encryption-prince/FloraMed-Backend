@@ -4,7 +4,9 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Role;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.User;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.UserRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.TokenBacklistService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,9 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TokenBacklistService backlistService;
 
     @PostMapping("/complete-signup")
     public ResponseEntity<?> completeSignup(@RequestParam("token") String tempToken,
@@ -61,6 +66,22 @@ public class AuthController {
     @GetMapping("/test-token")
     public ResponseEntity<?> testToken(@RequestParam("token") String token) {
         return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(400).body("No token provided");
+        }
+
+        String token = authHeader.substring(7);
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(400).body("Invalid or expired token");
+        }
+
+        backlistService.blacklistToken(token);
+        return ResponseEntity.ok("Logged out successfully");
     }
 
 }

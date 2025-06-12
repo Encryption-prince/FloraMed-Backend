@@ -3,6 +3,7 @@ package com.virtual.herbal.garden.Virtual_Herbs_Garden.config;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtAuthenticationFilter;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.oauth.CustomOAuth2SuccessHandler;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.TokenBacklistService;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,24 +26,28 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final CustomOAuth2SuccessHandler oAuth2SuccessHandler;
     private final UserService userService;
+    private final TokenBacklistService tokenBacklistService;
 
-    public SecurityConfig(JwtUtil jwtUtil,
-                          CustomOAuth2SuccessHandler oAuth2SuccessHandler,
-                          UserService userService) {
-        this.jwtUtil = jwtUtil;
-        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
-        this.userService = userService;
-    }
+
+//    public SecurityConfig(JwtUtil jwtUtil,
+//                          CustomOAuth2SuccessHandler oAuth2SuccessHandler,
+//                          UserService userService) {
+//        this.jwtUtil = jwtUtil;
+//        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
+//        this.userService = userService;
+//    }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtUtil, userService);
+    public JwtAuthenticationFilter jwtAuthenticationFilter(TokenBacklistService tokenBacklistService) {
+        return new JwtAuthenticationFilter(jwtUtil, userService, tokenBacklistService);
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -90,10 +95,8 @@ public class SecurityConfig {
 //                new JwtAuthenticationFilter(jwtUtil, userService),
 //                UsernamePasswordAuthenticationFilter.class
 //        );
-        http.addFilterBefore(
-                new JwtAuthenticationFilter(jwtUtil, userService),
-                UsernamePasswordAuthenticationFilter.class
-        );
+        http.addFilterBefore(jwtAuthenticationFilter(tokenBacklistService), UsernamePasswordAuthenticationFilter.class);
+
 
 
         return http.build();

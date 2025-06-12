@@ -47,6 +47,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 // ✅ Existing user – generate JWT and return it
                 String jwt = jwtUtil.generateToken(email);
 
+               // System.out.println("Generated JWT for " + email + " : " + jwt);
+
                 response.setContentType("application/json");
                 response.getWriter().write("{\"status\": \"existing\", \"token\": \"" + jwt + "\", \"role\": \"" + existingUser.get().getRole() + "\"}");
 
