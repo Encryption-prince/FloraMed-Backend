@@ -77,6 +77,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/comments/add")
                         .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")                               // ← must be logged in
                         .requestMatchers(HttpMethod.DELETE, "/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/feedback/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/feedback/submit").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
