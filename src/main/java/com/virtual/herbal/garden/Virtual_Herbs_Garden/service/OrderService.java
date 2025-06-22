@@ -5,8 +5,10 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Orders;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.PlantPurchase;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Product;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.OrdersRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantPurchaseRepository;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,6 +31,9 @@ public class OrderService {
 
 	@Autowired
 	private PlantPurchaseRepository plantPurchaseRepo;
+
+	@Autowired
+	private ProductRepository productRepo;
 
 
 	@Value("${razorpay.key.id}")
@@ -41,19 +47,56 @@ public class OrderService {
 	public void init() throws RazorpayException {
 		this.razorpayCLient = new RazorpayClient(razorpayId, razorpaySecret);
 	}
-	
-	public Orders createOrder(Orders order) throws RazorpayException {
-        JSONObject options = new JSONObject();
-        options.put("amount", order.getAmount() * 100); // amount in paise
-        options.put("currency", "INR");
-        options.put("receipt", order.getEmail());
-        Order razorpayOrder = razorpayCLient.orders.create(options);
-        if(razorpayOrder != null) {
-        order.setRazorpayOrderId(razorpayOrder.get("id"));
-        order.setOrderStatus(razorpayOrder.get("status"));
-        }
-        return ordersRepository.save(order);
-    }
+	//actual
+//	public Orders createOrder(Orders order) throws RazorpayException {
+//        JSONObject options = new JSONObject();
+//        options.put("amount", order.getAmount() * 100); // amount in paise
+//        options.put("currency", "INR");
+//        options.put("receipt", order.getEmail());
+//        Order razorpayOrder = razorpayCLient.orders.create(options);
+//        if(razorpayOrder != null) {
+//        order.setRazorpayOrderId(razorpayOrder.get("id"));
+//        order.setOrderStatus(razorpayOrder.get("status"));
+//        }
+//        return ordersRepository.save(order);
+//    }
+	public Orders createOrder(Orders orderRequest) throws RazorpayException {
+		List<Long> productIds = orderRequest.getProductIds();
+		if (productIds == null || productIds.isEmpty()) {
+			throw new IllegalArgumentException("Product IDs cannot be empty");
+		}
+
+		// Fetch prices from DB
+		List<Product> products = productRepo.findAllById(productIds);
+		if (products.size() != productIds.size()) {
+			throw new IllegalArgumentException("One or more product IDs are invalid");
+		}
+
+		// Calculate total
+		int totalAmount = products.stream()
+				.mapToInt(product -> product.getPrice().intValue()) // assuming price is BigDecimal
+				.sum();
+
+		// Create Razorpay Order
+		JSONObject options = new JSONObject();
+		options.put("amount", totalAmount * 100); // in paise
+		options.put("currency", "INR");
+		options.put("receipt", orderRequest.getEmail());
+
+		Order razorpayOrder = razorpayCLient.orders.create(options);
+
+		// Save order to DB
+		Orders newOrder = new Orders();
+		newOrder.setProductIds(productIds);
+		newOrder.setEmail(orderRequest.getEmail());
+		newOrder.setName(orderRequest.getName());
+		newOrder.setAmount(totalAmount);
+		newOrder.setRazorpayOrderId(razorpayOrder.get("id"));
+		newOrder.setOrderStatus(razorpayOrder.get("status"));
+
+		return ordersRepository.save(newOrder);
+	}
+
 //actual
 //	public Orders updateStatus(Map<String, String> map) {
 //    	String razorpayId = map.get("razorpay_order_id");
