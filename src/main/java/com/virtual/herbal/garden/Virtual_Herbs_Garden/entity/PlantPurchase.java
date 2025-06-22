@@ -22,7 +22,7 @@ public class PlantPurchase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long plantId;
+    private Long productId;
 
     private String userEmail;
 

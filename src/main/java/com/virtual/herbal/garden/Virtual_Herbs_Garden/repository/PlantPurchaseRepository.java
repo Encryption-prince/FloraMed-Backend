@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface PlantPurchaseRepository extends JpaRepository<PlantPurchase, Long> {
     List<PlantPurchase> findByUserEmail(String userEmail);
-    List<PlantPurchase> findByPlantId(Long herbId);
+    List<PlantPurchase> findByProductId(Long productId);
 }
 

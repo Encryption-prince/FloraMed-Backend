@@ -63,6 +63,26 @@ public class OrderService {
 //    	return orders;
 //    }
 
+//public Orders updateStatus(Map<String, String> map) {
+//	String razorpayId = map.get("razorpay_order_id");
+//	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
+//	order.setOrderStatus("PAYMENT DONE");
+//	Orders updatedOrder = ordersRepository.save(order);
+//
+//	if ("PAYMENT DONE".equals(updatedOrder.getOrderStatus())) {
+//		// Save purchase directly without API call
+//		PlantPurchase purchase = PlantPurchase.builder()
+//				.plantId(updatedOrder.getPlantId())
+//				.userEmail(updatedOrder.getEmail())
+//				.purchasedAt(LocalDateTime.now())
+//				.build();
+//
+//		plantPurchaseRepo.save(purchase);
+//		System.out.println("✅ Purchase saved for " + updatedOrder.getEmail());
+//	}
+//
+//	return updatedOrder;
+//}
 public Orders updateStatus(Map<String, String> map) {
 	String razorpayId = map.get("razorpay_order_id");
 	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
@@ -70,15 +90,17 @@ public Orders updateStatus(Map<String, String> map) {
 	Orders updatedOrder = ordersRepository.save(order);
 
 	if ("PAYMENT DONE".equals(updatedOrder.getOrderStatus())) {
-		// Save purchase directly without API call
-		PlantPurchase purchase = PlantPurchase.builder()
-				.plantId(updatedOrder.getPlantId())
-				.userEmail(updatedOrder.getEmail())
-				.purchasedAt(LocalDateTime.now())
-				.build();
+		// Loop through plantIds and save each purchase
+		for (Long productId : updatedOrder.getProductIds()) {
+			PlantPurchase purchase = PlantPurchase.builder()
+					.productId(productId)
+					.userEmail(updatedOrder.getEmail())
+					.purchasedAt(LocalDateTime.now())
+					.build();
 
-		plantPurchaseRepo.save(purchase);
-		System.out.println("✅ Purchase saved for " + updatedOrder.getEmail());
+			plantPurchaseRepo.save(purchase);
+			System.out.println("✅ Purchase logged for plant ID: " + productId);
+		}
 	}
 
 	return updatedOrder;

@@ -30,9 +30,9 @@ public class PlantPurchaseController {
     }
 
     // ✅ Admin or Herbalist can still fetch by plant if needed (or restrict further)
-    @GetMapping("/by-plant")
-    public ResponseEntity<List<PlantPurchase>> getPurchasesByPlant(@RequestParam Long plantId) {
-        return ResponseEntity.ok(purchaseRepo.findByPlantId(plantId));
+    @GetMapping("/by-product")
+    public ResponseEntity<List<PlantPurchase>> getPurchasesByPlant(@RequestParam Long productId) {
+        return ResponseEntity.ok(purchaseRepo.findByProductId(productId));
     }
 
 }

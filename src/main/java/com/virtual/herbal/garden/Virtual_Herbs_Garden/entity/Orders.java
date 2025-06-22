@@ -1,6 +1,7 @@
 package com.virtual.herbal.garden.Virtual_Herbs_Garden.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Orders")
@@ -9,7 +10,8 @@ public class Orders {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer orderId;
-	private Long plantId;
+	@ElementCollection
+	private List<Long> productIds;
 	private String name;
 	private String email;
 	private Integer amount;
@@ -18,8 +20,8 @@ public class Orders {
 	public Integer getOrderId() {
 		return orderId;
 	}
-	public void setPlantId(Long plantId) {this.plantId = plantId;}
-	public Long getPlantId() {return plantId;}
+	public List<Long> getProductIds() {return productIds;}
+	public void setProductIds(List<Long> plantIds) {this.productIds = productIds;}
 	public void setOrderId(Integer orderId) {
 		this.orderId = orderId;
 	}
