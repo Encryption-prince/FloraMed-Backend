@@ -79,7 +79,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/comments/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/feedback/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/feedback/submit").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/purchases/**/internal-buy").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/purchases/*/internal-buy").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth

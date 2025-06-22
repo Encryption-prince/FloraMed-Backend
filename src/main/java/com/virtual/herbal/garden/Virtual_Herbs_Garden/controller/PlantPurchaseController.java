@@ -35,35 +35,4 @@ public class PlantPurchaseController {
         return ResponseEntity.ok(purchaseRepo.findByPlantId(plantId));
     }
 
-    // ✅ Log a purchase after successful payment (called internally, or by frontend after payment)
-//    @PostMapping("/{plantId}/buy")
-//    public ResponseEntity<?> logPurchase(@PathVariable Long plantId) {
-//        var auth = SecurityContextHolder.getContext().getAuthentication();
-//        if (auth == null || !auth.isAuthenticated()) {
-//            return ResponseEntity.status(401).body("Unauthorized");
-//        }
-//
-//        String email = auth.getName();
-//        PlantPurchase purchase = PlantPurchase.builder()
-//                .plantId(plantId)
-//                .userEmail(email)
-//                .purchasedAt(LocalDateTime.now())
-//                .build();
-//        purchaseRepo.save(purchase);
-//
-//        return ResponseEntity.ok("Purchase logged.");
-//    }
-    @PostMapping("/{plantId}/internal-buy")
-    public ResponseEntity<?> logInternalPurchase(@PathVariable Long plantId, @RequestParam String email) {
-        PlantPurchase purchase = PlantPurchase.builder()
-                .plantId(plantId)
-                .userEmail(email)
-                .purchasedAt(LocalDateTime.now())
-                .build();
-        purchaseRepo.save(purchase);
-
-        System.out.println("✅ Internal Purchase Logged for " + email);
-        return ResponseEntity.ok("Internal Purchase logged.");
-    }
-
 }

@@ -4,7 +4,9 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Orders;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.PlantPurchase;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.OrdersRepository;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantPurchaseRepository;
 import jakarta.annotation.PostConstruct;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,11 @@ public class OrderService {
 	
 	@Autowired
 	private OrdersRepository ordersRepository;
-	
+
+	@Autowired
+	private PlantPurchaseRepository plantPurchaseRepo;
+
+
 	@Value("${razorpay.key.id}")
 	private String razorpayId;
 	@Value("${razorpay.key.secret}")
@@ -57,81 +63,27 @@ public class OrderService {
 //    	return orders;
 //    }
 
-	//required for purchase logging
-//public Orders updateStatus(Map<String, String> map) {
-//	String razorpayId = map.get("razorpay_order_id");
-//	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
-//	order.setOrderStatus("PAYMENT DONE");
-//	Orders updatedOrder = ordersRepository.save(order);
-//
-//	if (updatedOrder.getOrderStatus().equals("PAYMENT DONE")) {
-//		// Call Virtual Herbal Garden purchase logging API
-//		try {
-//			String apiUrl = "https://quarrelsome-mae-subham-org-14444f5f.koyeb.app/purchases"; // adjust host/port
-//
-//			URL url = new URL(apiUrl);
-//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//			conn.setRequestMethod("POST");
-//			conn.setRequestProperty("Content-Type", "application/json");
-//			conn.setDoOutput(true);
-//
-//			String jsonPayload = String.format(
-//					"{\"plantId\":%d, \"userEmail\":\"%s\", \"purchasedAt\":\"%s\"}",
-//					updatedOrder.getPlantId(),
-//					updatedOrder.getEmail(),
-//					LocalDateTime.now()
-//			);
-//
-//			try (OutputStream os = conn.getOutputStream()) {
-//				byte[] input = jsonPayload.getBytes("utf-8");
-//				os.write(input, 0, input.length);
-//			}
-//
-//			int responseCode = conn.getResponseCode();
-//			if (responseCode == 200 || responseCode == 201) {
-//				System.out.println("Purchase logged successfully.");
-//			} else {
-//				System.out.println("Failed to log purchase.");
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	return updatedOrder;
-//}
+public Orders updateStatus(Map<String, String> map) {
+	String razorpayId = map.get("razorpay_order_id");
+	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
+	order.setOrderStatus("PAYMENT DONE");
+	Orders updatedOrder = ordersRepository.save(order);
 
-	public Orders updateStatus(Map<String, String> map) {
-		String razorpayId = map.get("razorpay_order_id");
-		Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
-		order.setOrderStatus("PAYMENT DONE");
-		Orders updatedOrder = ordersRepository.save(order);
+	if ("PAYMENT DONE".equals(updatedOrder.getOrderStatus())) {
+		// Save purchase directly without API call
+		PlantPurchase purchase = PlantPurchase.builder()
+				.plantId(updatedOrder.getPlantId())
+				.userEmail(updatedOrder.getEmail())
+				.purchasedAt(LocalDateTime.now())
+				.build();
 
-		if ("PAYMENT DONE".equals(updatedOrder.getOrderStatus())) {
-			try {
-				// Build correct URL with plantId
-				String apiUrl = "https://quarrelsome-mae-subham-org-14444f5f.koyeb.app/purchases/"
-						+ updatedOrder.getPlantId() + "/internal-buy?email="
-						+ URLEncoder.encode(updatedOrder.getEmail(), "UTF-8");
-
-				URL url = new URL(apiUrl);
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-				conn.setRequestMethod("POST");
-
-				int responseCode = conn.getResponseCode();
-				if (responseCode == 200 || responseCode == 201) {
-					System.out.println("✅ Purchase logged successfully for " + updatedOrder.getEmail());
-				} else {
-					System.out.println("❌ Failed to log purchase. Response Code: " + responseCode);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-
-		return updatedOrder;
+		plantPurchaseRepo.save(purchase);
+		System.out.println("✅ Purchase saved for " + updatedOrder.getEmail());
 	}
+
+	return updatedOrder;
+}
+
 
 
 }
