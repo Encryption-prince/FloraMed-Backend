@@ -56,47 +56,85 @@ public class OrderService {
 //    	return orders;
 //    }
 
-public Orders updateStatus(Map<String, String> map) {
-	String razorpayId = map.get("razorpay_order_id");
-	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
-	order.setOrderStatus("PAYMENT DONE");
-	Orders updatedOrder = ordersRepository.save(order);
+	//required for purchase logging
+//public Orders updateStatus(Map<String, String> map) {
+//	String razorpayId = map.get("razorpay_order_id");
+//	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
+//	order.setOrderStatus("PAYMENT DONE");
+//	Orders updatedOrder = ordersRepository.save(order);
+//
+//	if (updatedOrder.getOrderStatus().equals("PAYMENT DONE")) {
+//		// Call Virtual Herbal Garden purchase logging API
+//		try {
+//			String apiUrl = "https://quarrelsome-mae-subham-org-14444f5f.koyeb.app/purchases"; // adjust host/port
+//
+//			URL url = new URL(apiUrl);
+//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//			conn.setRequestMethod("POST");
+//			conn.setRequestProperty("Content-Type", "application/json");
+//			conn.setDoOutput(true);
+//
+//			String jsonPayload = String.format(
+//					"{\"plantId\":%d, \"userEmail\":\"%s\", \"purchasedAt\":\"%s\"}",
+//					updatedOrder.getPlantId(),
+//					updatedOrder.getEmail(),
+//					LocalDateTime.now()
+//			);
+//
+//			try (OutputStream os = conn.getOutputStream()) {
+//				byte[] input = jsonPayload.getBytes("utf-8");
+//				os.write(input, 0, input.length);
+//			}
+//
+//			int responseCode = conn.getResponseCode();
+//			if (responseCode == 200 || responseCode == 201) {
+//				System.out.println("Purchase logged successfully.");
+//			} else {
+//				System.out.println("Failed to log purchase.");
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	return updatedOrder;
+//}
 
-	if (updatedOrder.getOrderStatus().equals("PAYMENT DONE")) {
-		// Call Virtual Herbal Garden purchase logging API
-		try {
-			String apiUrl = "https://quarrelsome-mae-subham-org-14444f5f.koyeb.app/purchases"; // adjust host/port
+	public Orders updateStatus(Map<String, String> map) {
+		String razorpayId = map.get("razorpay_order_id");
+		Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
+		order.setOrderStatus("PAYMENT DONE");
+		Orders updatedOrder = ordersRepository.save(order);
 
-			URL url = new URL(apiUrl);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Type", "application/json");
-			conn.setDoOutput(true);
+		if ("PAYMENT DONE".equals(updatedOrder.getOrderStatus())) {
+			try {
+				// Build correct URL with plantId
+				String apiUrl = "https://quarrelsome-mae-subham-org-14444f5f.koyeb.app/purchases/"
+						+ updatedOrder.getPlantId() + "/buy";
 
-			String jsonPayload = String.format(
-					"{\"plantId\":%d, \"userEmail\":\"%s\", \"purchasedAt\":\"%s\"}",
-					updatedOrder.getPlantId(),
-					updatedOrder.getEmail(),
-					LocalDateTime.now()
-			);
+				URL url = new URL(apiUrl);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setRequestMethod("POST");
 
-			try (OutputStream os = conn.getOutputStream()) {
-				byte[] input = jsonPayload.getBytes("utf-8");
-				os.write(input, 0, input.length);
+				// If you have a system JWT, include it here — for now leave as a comment
+				// String token = "<system JWT>";
+				// conn.setRequestProperty("Authorization", "Bearer " + token);
+
+				conn.setDoOutput(true);
+
+				int responseCode = conn.getResponseCode();
+				if (responseCode == 200 || responseCode == 201) {
+					System.out.println("Purchase logged successfully.");
+				} else {
+					System.out.println("Failed to log purchase. Response Code: " + responseCode);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-
-			int responseCode = conn.getResponseCode();
-			if (responseCode == 200 || responseCode == 201) {
-				System.out.println("Purchase logged successfully.");
-			} else {
-				System.out.println("Failed to log purchase.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+
+		return updatedOrder;
 	}
 
-	return updatedOrder;
-}
 
 }
