@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -110,28 +111,24 @@ public class OrderService {
 			try {
 				// Build correct URL with plantId
 				String apiUrl = "https://quarrelsome-mae-subham-org-14444f5f.koyeb.app/purchases/"
-						+ updatedOrder.getPlantId() + "/buy";
+						+ updatedOrder.getPlantId() + "/internal-buy?email="
+						+ URLEncoder.encode(updatedOrder.getEmail(), "UTF-8");
 
 				URL url = new URL(apiUrl);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("POST");
 
-				// If you have a system JWT, include it here — for now leave as a comment
-				// String token = "<system JWT>";
-				// conn.setRequestProperty("Authorization", "Bearer " + token);
-
-				conn.setDoOutput(true);
-
 				int responseCode = conn.getResponseCode();
 				if (responseCode == 200 || responseCode == 201) {
-					System.out.println("Purchase logged successfully.");
+					System.out.println("✅ Purchase logged successfully for " + updatedOrder.getEmail());
 				} else {
-					System.out.println("Failed to log purchase. Response Code: " + responseCode);
+					System.out.println("❌ Failed to log purchase. Response Code: " + responseCode);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+
 
 		return updatedOrder;
 	}
