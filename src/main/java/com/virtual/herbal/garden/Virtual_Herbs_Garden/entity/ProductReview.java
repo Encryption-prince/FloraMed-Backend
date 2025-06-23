@@ -13,18 +13,18 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlantPurchase {
-
+@Builder
+public class ProductReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long reviewId;
 
     private Long productId;
-
     private String userEmail;
-
-    private LocalDateTime purchasedAt;
+    private String comment;
+    private int rating; // 1–5
+    private LocalDateTime reviewedAt;
 }
+

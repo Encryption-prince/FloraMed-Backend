@@ -4,10 +4,10 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Orders;
-import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.PlantPurchase;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.ProductPurchase;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Product;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.OrdersRepository;
-import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantPurchaseRepository;
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.ProductPurchaseRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
 import org.json.JSONObject;
@@ -15,10 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +26,7 @@ public class OrderService {
 	private OrdersRepository ordersRepository;
 
 	@Autowired
-	private PlantPurchaseRepository plantPurchaseRepo;
+	private ProductPurchaseRepository plantPurchaseRepo;
 
 	@Autowired
 	private ProductRepository productRepo;
@@ -135,7 +131,7 @@ public Orders updateStatus(Map<String, String> map) {
 	if ("PAYMENT DONE".equals(updatedOrder.getOrderStatus())) {
 		// Loop through plantIds and save each purchase
 		for (Long productId : updatedOrder.getProductIds()) {
-			PlantPurchase purchase = PlantPurchase.builder()
+			ProductPurchase purchase = ProductPurchase.builder()
 					.productId(productId)
 					.userEmail(updatedOrder.getEmail())
 					.purchasedAt(LocalDateTime.now())
