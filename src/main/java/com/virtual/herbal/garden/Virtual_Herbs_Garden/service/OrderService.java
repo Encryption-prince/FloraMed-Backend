@@ -149,6 +149,4 @@ public Orders updateStatus(Map<String, String> map) {
 	return updatedOrder;
 }
 
-
-
 }

@@ -22,6 +22,7 @@ public class OrdersController {
 
 	@PostMapping("/create")
 	public ResponseEntity<Orders> createOrder(@RequestBody Orders order) throws RazorpayException {
+		System.out.println("Received order: " + order);
 		Orders createdOrder = orderService.createOrder(order);
 		return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
 	}
