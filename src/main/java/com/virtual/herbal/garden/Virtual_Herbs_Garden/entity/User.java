@@ -33,4 +33,12 @@ public class User {
     // Only set for HERBALISTs (e.g., stored on disk or S3 path)
     @Column(length = 1000)
     private String identificationDocument;
+
+    @Enumerated(EnumType.STRING)
+    private VerificationStatus verificationStatus;
+
+    @Column(nullable = false)
+    private boolean banned = false;
+
+
 }

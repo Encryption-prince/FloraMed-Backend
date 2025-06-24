@@ -47,7 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.equals("/home") ||
                 path.startsWith("/comments/by-blog/") ||
                 path.startsWith("/feedback") ||
-               path.startsWith("/marketplace/products/all")) {
+               path.startsWith("/marketplace/products/all") ||
+               path.startsWith("/test/mail/send")) {
             // Skip public endpoints
             filterChain.doFilter(request, response);
             return;
@@ -75,8 +76,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Lookup user to get role
             User user = userService.findByEmail(email)
                     .orElse(null);
+
             if (user == null) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not found");
+                return;
+            }
+
+            if (user.isBanned()) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Account banned");
                 return;
             }
 

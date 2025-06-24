@@ -80,6 +80,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/feedback/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/feedback/submit").permitAll()
                         .requestMatchers(HttpMethod.GET, "/marketplace/products/all").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/test/**").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
