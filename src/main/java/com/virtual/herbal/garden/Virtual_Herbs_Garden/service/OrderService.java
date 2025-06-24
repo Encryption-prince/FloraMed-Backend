@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class OrderService {
@@ -43,37 +45,36 @@ public class OrderService {
 	public void init() throws RazorpayException {
 		this.razorpayCLient = new RazorpayClient(razorpayId, razorpaySecret);
 	}
-	//actual
-//	public Orders createOrder(Orders order) throws RazorpayException {
-//        JSONObject options = new JSONObject();
-//        options.put("amount", order.getAmount() * 100); // amount in paise
-//        options.put("currency", "INR");
-//        options.put("receipt", order.getEmail());
-//        Order razorpayOrder = razorpayCLient.orders.create(options);
-//        if(razorpayOrder != null) {
-//        order.setRazorpayOrderId(razorpayOrder.get("id"));
-//        order.setOrderStatus(razorpayOrder.get("status"));
-//        }
-//        return ordersRepository.save(order);
-//    }
+
 	public Orders createOrder(Orders orderRequest) throws RazorpayException {
 		List<Long> productIds = orderRequest.getProductIds();
 		if (productIds == null || productIds.isEmpty()) {
 			throw new IllegalArgumentException("Product IDs cannot be empty");
 		}
 
-		// Fetch prices from DB
-		List<Product> products = productRepo.findAllById(productIds);
-		if (products.size() != productIds.size()) {
+// Fetch unique product IDs
+		Set<Long> uniqueProductIds = new HashSet<>(productIds);
+
+// Fetch products from DB
+		List<Product> products = productRepo.findAllById(uniqueProductIds);
+
+// Validate existence
+		if (products.size() != uniqueProductIds.size()) {
 			throw new IllegalArgumentException("One or more product IDs are invalid");
 		}
 
-		// Calculate total
-		int totalAmount = products.stream()
-				.mapToInt(product -> product.getPrice().intValue()) // assuming price is BigDecimal
+// Calculate total amount based on requested productIds (including duplicates)
+		int totalAmount = productIds.stream()
+				.mapToInt(id -> {
+					Product product = products.stream()
+							.filter(p -> p.getProductId().equals(id))
+							.findFirst()
+							.orElseThrow(() -> new IllegalArgumentException("Invalid product ID: " + id));
+					return product.getPrice().intValue();
+				})
 				.sum();
 
-		// Create Razorpay Order
+// Create Razorpay Order
 		JSONObject options = new JSONObject();
 		options.put("amount", totalAmount * 100); // in paise
 		options.put("currency", "INR");
@@ -81,7 +82,7 @@ public class OrderService {
 
 		Order razorpayOrder = razorpayCLient.orders.create(options);
 
-		// Save order to DB
+// Save order to DB
 		Orders newOrder = new Orders();
 		newOrder.setProductIds(productIds);
 		newOrder.setEmail(orderRequest.getEmail());
@@ -91,37 +92,10 @@ public class OrderService {
 		newOrder.setOrderStatus(razorpayOrder.get("status"));
 
 		return ordersRepository.save(newOrder);
+
 	}
 
-//actual
-//	public Orders updateStatus(Map<String, String> map) {
-//    	String razorpayId = map.get("razorpay_order_id");
-//    	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
-//    	order.setOrderStatus("PAYMENT DONE");
-//    	Orders orders = ordersRepository.save(order);
-//    	return orders;
-//    }
 
-//public Orders updateStatus(Map<String, String> map) {
-//	String razorpayId = map.get("razorpay_order_id");
-//	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
-//	order.setOrderStatus("PAYMENT DONE");
-//	Orders updatedOrder = ordersRepository.save(order);
-//
-//	if ("PAYMENT DONE".equals(updatedOrder.getOrderStatus())) {
-//		// Save purchase directly without API call
-//		PlantPurchase purchase = PlantPurchase.builder()
-//				.plantId(updatedOrder.getPlantId())
-//				.userEmail(updatedOrder.getEmail())
-//				.purchasedAt(LocalDateTime.now())
-//				.build();
-//
-//		plantPurchaseRepo.save(purchase);
-//		System.out.println("✅ Purchase saved for " + updatedOrder.getEmail());
-//	}
-//
-//	return updatedOrder;
-//}
 public Orders updateStatus(Map<String, String> map) {
 	String razorpayId = map.get("razorpay_order_id");
 	Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
