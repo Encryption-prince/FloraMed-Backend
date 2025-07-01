@@ -6,6 +6,7 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.dto.FilterBlogRequest;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Blog;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.BlogRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequestMapping("/blogs")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Blog-Controller")
 public class BlogController {
 
     private final BlogRepository blogRepository;

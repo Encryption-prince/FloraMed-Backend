@@ -6,9 +6,11 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.OrdersRepositor
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.ProductRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +22,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin/metrics")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+@Tag(name = "Admin-Metrics-Controller")
 public class AdminMetricsController {
 
     private final ProductRepository productRepo;

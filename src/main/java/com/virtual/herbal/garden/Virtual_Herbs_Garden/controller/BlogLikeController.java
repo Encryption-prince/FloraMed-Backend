@@ -6,6 +6,7 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.BlogLikeReposit
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.BlogRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.BlogLikeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/blogs")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+@Tag(name = "Blog-Like-Controller")
 public class BlogLikeController {
 
     private final BlogLikeRepository blogLikeRepository;

@@ -6,6 +6,7 @@ import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantRepository
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.ProductRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.UserRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.MailService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Admin-Controller")
 public class AdminController {
 
     private final UserRepository userRepo;

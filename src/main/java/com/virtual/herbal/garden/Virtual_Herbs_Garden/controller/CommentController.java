@@ -4,6 +4,7 @@ package com.virtual.herbal.garden.Virtual_Herbs_Garden.controller;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Comment;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.security.jwt.JwtUtil;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.service.CommentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/comments")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Comment-Controller")
 public class CommentController {
 
     private final CommentService commentService;

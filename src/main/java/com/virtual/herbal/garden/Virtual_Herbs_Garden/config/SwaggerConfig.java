@@ -23,7 +23,22 @@ public class SwaggerConfig {
                         .description("API documentation for Virtual Herbal Garden project")
                 )
                 .tags(Arrays.asList(
-                        new Tag().name("Auth API"), new Tag().name("TEST API")
+                        new Tag().name("Auth API"),
+                        new Tag().name("USER API"),
+                        new Tag().name("Admin-Controller"),
+                        new Tag().name("Admin-Metrics-Controller"),
+                        new Tag().name("Plant API"),
+                        new Tag().name("Product Marketplace API"),
+                        new Tag().name("product-purchase-controller"),
+                        new Tag().name("Product Reviews and Ratings API"),
+                        new Tag().name("Order API"),
+                        new Tag().name("Bookmark Plant API"),
+                        new Tag().name("Blog-Controller"),
+                        new Tag().name("Blog-Like-Controller"),
+                        new Tag().name("Comment-Controller"),
+                        new Tag().name("Feedback Form API"),
+                        new Tag().name("Mail-Test-Controller"),
+                        new Tag().name("TEST API")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components().addSecuritySchemes(
