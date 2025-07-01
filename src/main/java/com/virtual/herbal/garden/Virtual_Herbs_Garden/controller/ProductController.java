@@ -55,4 +55,12 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully.");
     }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<List<Product>> getRecommendations(
+            @RequestParam String userEmail,
+            @RequestParam(defaultValue = "5") int limit) {
+        List<Product> recommendations = productService.recommendProductsForUser(userEmail, limit);
+        return ResponseEntity.ok(recommendations);
+    }
 }
