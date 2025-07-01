@@ -14,5 +14,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     List<User> findByRoleAndVerificationStatus(Role role, VerificationStatus status);
     List<User> findByBannedTrue();
-
+    long countByRoleAndVerificationStatus(Role role, VerificationStatus status);
 }
