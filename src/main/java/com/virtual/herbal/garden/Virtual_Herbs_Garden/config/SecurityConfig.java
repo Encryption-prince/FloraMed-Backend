@@ -72,7 +72,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/blogs/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/blogs/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/user/profile")
-                        .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET,  "/comments/by-blog/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/comments/add")
                         .hasAnyAuthority("ROLE_USER", "ROLE_HERBALIST")                               // ← must be logged in
