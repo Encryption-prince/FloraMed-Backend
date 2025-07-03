@@ -11,21 +11,21 @@ public class MailService {
 
     private final JavaMailSender mailSender;
 
-    public void sendApprovalEmail(String to) {
-        sendEmail(to, "Herbalist Application Approved ✅", "Congratulations! Your herbalist profile has been approved.");
+    public void sendUnBannedEmail(String to) {
+        sendEmail(to, "Account Unbanned ✅", "Your account has been restored, Have a nice experience.");
     }
 
-    public void sendRejectionEmail(String to) {
-        sendEmail(to, "Herbalist Application Rejected ❌", "Sorry, your herbalist application was not approved.");
+    public void sendBannedEmail(String to) {
+        sendEmail(to, "Your Account has been banned", "Due to violating user policy, your account has been banned. If you think this is a mistake, please contact support.");
     }
 
-    public void sendPendingEmail(String to) {
-        sendEmail(to, "Herbalist Application Pending ⏳", "Your herbalist application is under review.");
-    }
+//    public void sendPendingEmail(String to) {
+//        sendEmail(to, "Herbalist Application Pending ⏳", "Your herbalist application is under review.");
+//    }
 
     private void sendEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("your.email@gmail.com");  // your sender address
+        message.setFrom("sample.email@gmail.com");  // your sender address
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);

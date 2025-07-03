@@ -34,9 +34,6 @@ public class User {
     @Column(length = 1000)
     private String identificationDocument;
 
-    @Enumerated(EnumType.STRING)
-    private VerificationStatus verificationStatus;
-
     @Column(nullable = false)
     private boolean banned = false;
 

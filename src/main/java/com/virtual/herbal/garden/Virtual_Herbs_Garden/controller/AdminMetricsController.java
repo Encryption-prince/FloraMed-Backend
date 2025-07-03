@@ -1,7 +1,6 @@
 package com.virtual.herbal.garden.Virtual_Herbs_Garden.controller;
 
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Role;
-import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.VerificationStatus;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.OrdersRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.ProductRepository;
@@ -39,8 +38,6 @@ public class AdminMetricsController {
         metrics.put("totalProducts", productRepo.count());
         metrics.put("totalPlants", plantRepo.count());
         metrics.put("totalUsers", userRepo.count());
-        metrics.put("approvedHerbalists", userRepo.countByRoleAndVerificationStatus(Role.HERBALIST, VerificationStatus.APPROVED));
-        metrics.put("pendingHerbalists", userRepo.countByRoleAndVerificationStatus(Role.HERBALIST, VerificationStatus.PENDING));
         metrics.put("totalOrders", ordersRepo.count());
 
         // Total revenue if amount field is in Orders

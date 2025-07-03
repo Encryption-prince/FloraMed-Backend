@@ -27,33 +27,6 @@ public class AdminController {
     private final ProductRepository productRepo;
     private final PlantRepository plantRepo;
 
-    // 🔍 Get all pending herbalists
-    @GetMapping("/herbalists/pending")
-    public List<User> getPendingHerbalists() {
-        return userRepo.findByRoleAndVerificationStatus(Role.HERBALIST, VerificationStatus.PENDING);
-    }
-
-    // ✅ Approve herbalist
-    @PutMapping("/herbalists/{id}/approve")
-    public ResponseEntity<String> approveHerbalist(@PathVariable Long id) {
-        User herbalist = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        herbalist.setVerificationStatus(VerificationStatus.APPROVED);
-        userRepo.save(herbalist);
-        mailService.sendApprovalEmail(herbalist.getEmail());
-        return ResponseEntity.ok("Herbalist approved ✅");
-    }
-
-    // ❌ Reject herbalist
-    @PutMapping("/herbalists/{id}/reject")
-    public ResponseEntity<String> rejectHerbalist(@PathVariable Long id) {
-        User herbalist = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        mailService.sendRejectionEmail(herbalist.getEmail());
-        userRepo.delete(herbalist);
-        return ResponseEntity.ok("Herbalist rejected and deleted ❌");
-    }
-
 
     // 🚫 Ban a user or herbalist
     @PutMapping("/users/{id}/ban")
@@ -61,6 +34,7 @@ public class AdminController {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setBanned(true);
+        mailService.sendBannedEmail(user.getEmail()); // Notify user via email
         userRepo.save(user);
         return ResponseEntity.ok("User " + user.getEmail() + " has been banned 🚫");
     }
@@ -71,6 +45,7 @@ public class AdminController {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setBanned(false);
+        mailService.sendUnBannedEmail(user.getEmail()); // Notify user via email
         userRepo.save(user);
         return ResponseEntity.ok("User " + user.getEmail() + " has been unbanned ✅");
     }
@@ -79,6 +54,30 @@ public class AdminController {
     @GetMapping("/users/banned")
     public List<User> getBannedUsers() {
         return userRepo.findByBannedTrue();
+    }
+
+    // 🔍 Get all users
+    @GetMapping("/users/all")
+    public List<User> getAllUsers() {
+        return userRepo.findAll();
+    }
+
+    @GetMapping("/users/all-users")
+    public ResponseEntity<List<User>> getAllUsersWithDetails() {
+        List<User> users = userRepo.findAllByRole(Role.USER);
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/users/all-herbalists")
+    public ResponseEntity<List<User>> getAllHerbalistsWithDetails() {
+        List<User> users = userRepo.findAllByRole(Role.HERBALIST);
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(users);
     }
 
 

@@ -17,7 +17,7 @@ public class MailTestController {
 
     @GetMapping("/send")
     public ResponseEntity<String> sendTestMail(@RequestParam String to) {
-        mailService.sendApprovalEmail(to);
+        mailService.sendBannedEmail(to);
         return ResponseEntity.ok("Test mail sent to " + to);
     }
 }
