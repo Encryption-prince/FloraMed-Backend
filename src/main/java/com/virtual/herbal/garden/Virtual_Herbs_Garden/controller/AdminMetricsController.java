@@ -1,5 +1,6 @@
 package com.virtual.herbal.garden.Virtual_Herbs_Garden.controller;
 
+import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.RevenueDataPoint;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.entity.Role;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.OrdersRepository;
 import com.virtual.herbal.garden.Virtual_Herbs_Garden.repository.PlantRepository;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -48,6 +52,19 @@ public class AdminMetricsController {
         metrics.put("totalRevenue", totalRevenue);
 
         return ResponseEntity.ok(metrics);
+    }
+
+    @GetMapping("/metrics/revenue/daily")
+    public List<RevenueDataPoint> getDailyRevenue() {
+        List<Object[]> rawResults = ordersRepo.findRevenueByDate();
+        List<RevenueDataPoint> revenueList = new ArrayList<>();
+
+        for (Object[] result : rawResults) {
+            LocalDate date = ((java.sql.Date) result[0]).toLocalDate();
+            BigDecimal totalRevenue = (BigDecimal) result[1];
+            revenueList.add(new RevenueDataPoint(date, totalRevenue));
+        }
+        return revenueList;
     }
 }
 

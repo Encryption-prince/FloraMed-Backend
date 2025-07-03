@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,6 +26,8 @@ public class Orders {
 	private Integer amount;
 	private String orderStatus;
 	private String razorpayOrderId;
+	@CreationTimestamp   // Hibernate will auto-set this on insert
+	private LocalDateTime createdAt;
 //	public Integer getOrderId() {
 //		return orderId;
 //	}
