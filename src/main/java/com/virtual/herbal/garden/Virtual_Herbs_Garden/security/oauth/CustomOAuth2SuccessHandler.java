@@ -53,8 +53,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 response.getWriter().write("{\"status\": \"existing\", \"token\": \"" + jwt + "\", \"role\": \"" + existingUser.get().getRole() + "\"}");
 
                 // Redirect to home page with JWT for the existing user
-                String redirectUrl = "http://localhost:5173/oauth/callback?token=" + URLEncoder.encode(jwt, StandardCharsets.UTF_8);
-                //String redirectUrl = "https://virtual-herbal-garden-frontend.vercel.app/oauth/callback?token=" + URLEncoder.encode(jwt, StandardCharsets.UTF_8);
+               // String redirectUrl = "http://localhost:5173/oauth/callback?token=" + URLEncoder.encode(jwt, StandardCharsets.UTF_8);
+                String redirectUrl = "https://virtual-herbal-garden-frontend.vercel.app/oauth/callback?token=" + URLEncoder.encode(jwt, StandardCharsets.UTF_8);
                 response.sendRedirect(redirectUrl);
 
             } else {
@@ -65,8 +65,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 response.getWriter().write("{\"status\": \"new\", \"tempToken\": \"" + tempToken + "\", \"name\": \"" + name + "\", \"picture\": \"" + picture + "\"}");
 
                 // Redirect to signup page with tempToken for new user
-                 String redirectUrl = "http://localhost:5173/oauth/callback?tempToken=" + URLEncoder.encode(tempToken, StandardCharsets.UTF_8);
-                 //String redirectUrl = "https://virtual-herbal-garden-frontend.vercel.app/oauth/callback?tempToken=" + URLEncoder.encode(tempToken, StandardCharsets.UTF_8);
+                // String redirectUrl = "http://localhost:5173/oauth/callback?tempToken=" + URLEncoder.encode(tempToken, StandardCharsets.UTF_8);
+                 String redirectUrl = "https://virtual-herbal-garden-frontend.vercel.app/oauth/callback?tempToken=" + URLEncoder.encode(tempToken, StandardCharsets.UTF_8);
                 response.sendRedirect(redirectUrl);
             }
 
